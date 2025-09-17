@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gumroad License Checker</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 40px; background-color: #f4f4f4; }
+        input, button { padding: 10px; margin: 5px 0; width: 300px; }
+        .result { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Gumroad License Checker</h1>
+    <input type="text" id="licenseKey" placeholder="Enter your license key">
+    <button onclick="verifyLicense()">Verify License</button>
+    <div class="result" id="result"></div>
+
+    <script>
+        async function verifyLicense() {
+            const licenseKey = document.getElementById('licenseKey').value;
+            const productId = 'SDGgCnivv6gTTHfVRfUBxQ=='; // Replace with your actual product ID
+
+            const formData = new URLSearchParams();
+            formData.append('product_id', productId);
+            formData.append('license_key', licenseKey);
+
+            try {
+                const response = await fetch('https://api.gumroad.com/v2/licenses/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+
+                const data = await response.json();
+                const resultDiv = document.getElementById('result');
+
+                if (data.success) {
+                    resultDiv.textContent = `License is valid! Buyer: ${data.purchase.email}`;
+                    resultDiv.style.color = 'green';
+                } else {
+                    resultDiv.textContent = 'Invalid license key.';
+                    resultDiv.style.color = 'red';
+                }
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error verifying license.';
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
